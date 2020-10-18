@@ -4,42 +4,33 @@
 #include <cmath>
 #include <cstdint>
 #define _USE_MATH_DEFINES
-#define EPSILON_VALUE 0.000000001
 
+#include "rational_num.h"
 
 // https://en.wikipedia.org/wiki/Complex_number
 class ComplexNumber {
-  double real;
-  double imag;
-
-  static bool comparator(double A, double B) {
-    return (std::fabs(A - B) < EPSILON_VALUE);
-  }
+  RationalNumber<double> real;
+  RationalNumber<double> imag;
 
  public:
   ComplexNumber(double num = 0) {
-    this->real = num;
+    this->real = RationalNumber<double>(num);
     this->imag = 0;
   }
 
-  explicit ComplexNumber(double real, double imag) {
+  explicit ComplexNumber(RationalNumber<double> real,
+                         RationalNumber<double> imag) {
     this->real = real;
     this->imag = imag;
   }
+
+  ComplexNumber &operator=(const ComplexNumber &other) = default;
 
   ComplexNumber operator+(const ComplexNumber &other) const {
     // (a + bi) + (c + di) = (a + c) + (b + d)i
     auto r_real = this->real + other.real;
     auto r_imag = this->imag + other.imag;
     return ComplexNumber(r_real, r_imag);
-  }
-
-  ComplexNumber operator+(int num) const {
-    return operator+(ComplexNumber(num));
-  }
-
-  ComplexNumber operator+(double num) const {
-    return operator+(ComplexNumber(num));
   }
 
   ComplexNumber operator-(const ComplexNumber &other) const {
@@ -49,28 +40,12 @@ class ComplexNumber {
     return ComplexNumber(r_real, r_imag);
   }
 
-  ComplexNumber operator-(int num) const {
-    return operator-(ComplexNumber(num));
-  }
-
-  ComplexNumber operator-(double num) const {
-    return operator-(ComplexNumber(num));
-  }
-
   ComplexNumber operator*(const ComplexNumber &other) const {
     // (a + bi) * (c + di) = ac + bci + adi + bdi^2 =
     // = (ac + bdi^2) + (bc + ad) = (ac - bd) + (bc + ad)i
     auto r_real = this->real * other.real - this->imag * other.imag;
     auto r_imag = this->imag * other.real + this->real * other.imag;
     return ComplexNumber(r_real, r_imag);
-  }
-
-  ComplexNumber operator*(int num) const {
-    return operator*(ComplexNumber(num));
-  }
-
-  ComplexNumber operator*(double num) const {
-    return operator*(ComplexNumber(num));
   }
 
   ComplexNumber operator/(const ComplexNumber &other) const {
@@ -83,14 +58,6 @@ class ComplexNumber {
     return ComplexNumber(r_real, r_imag);
   }
 
-  ComplexNumber operator/(int num) const {
-    return operator/(ComplexNumber(num, 0));
-  }
-
-  ComplexNumber operator/(double num) const {
-    return operator/(ComplexNumber(num, 0));
-  }
-
   ComplexNumber &operator+=(const ComplexNumber &other) {
     // (a + bi) + (c + di) = (a + c) + (b + d)i
     this->real += other.real;
@@ -98,27 +65,11 @@ class ComplexNumber {
     return *this;
   }
 
-  ComplexNumber &operator+=(int num) {
-    return operator+=(ComplexNumber(num, 0));
-  }
-
-  ComplexNumber &operator+=(double num) {
-    return operator+=(ComplexNumber(num, 0));
-  }
-
   ComplexNumber &operator-=(const ComplexNumber &other) {
     // (a + bi) - (c + di) = (a - c) + (b - d)i
     this->real -= other.real;
     this->imag -= other.imag;
     return *this;
-  }
-
-  ComplexNumber &operator-=(int num) {
-    return operator-=(ComplexNumber(num, 0));
-  }
-
-  ComplexNumber &operator-=(double num) {
-    return operator-=(ComplexNumber(num, 0));
   }
 
   ComplexNumber &operator*=(const ComplexNumber &other) {
@@ -129,14 +80,6 @@ class ComplexNumber {
     this->real = this->real * other.real - this->imag * other.imag;
     this->imag = this->imag * other_real + this_real * other.imag;
     return *this;
-  }
-
-  ComplexNumber &operator*=(int num) {
-    return operator*=(ComplexNumber(num, 0));
-  }
-
-  ComplexNumber &operator*=(double num) {
-    return operator*=(ComplexNumber(num, 0));
   }
 
   ComplexNumber &operator/=(const ComplexNumber &other) {
@@ -151,14 +94,6 @@ class ComplexNumber {
     return *this;
   }
 
-  ComplexNumber &operator/=(int num) {
-    return operator/=(ComplexNumber(num, 0));
-  }
-
-  ComplexNumber &operator/=(double num) {
-    return operator/=(ComplexNumber(num, 0));
-  }
-
   ComplexNumber operator-() const {
     auto r_real = -this->real;
     auto r_imag = -this->imag;
@@ -166,46 +101,45 @@ class ComplexNumber {
   }
 
   bool operator==(const ComplexNumber &other) const {
-    return comparator(this->real, other.real)
-        && comparator(this->imag, other.imag);
+    return (this->real == other.real) && (this->imag == other.imag);
   }
 
   bool operator!=(const ComplexNumber &other) const {
-    return !comparator(this->real, other.real) || !comparator(this->imag,
-                                                              other.imag);
+    return (this->real != other.real) || (this->imag != other.imag);
   }
 
   friend std::ostream &operator<<(std::ostream &os, const ComplexNumber &num) {
     return os << "(" << num.real << "," << num.imag << ")";
   }
 
-  double Arg() const {
+  RationalNumber<double> Arg() const {
     // tan(angle) = b / a
     // need to return angle in radians
     auto result = this->real == 0 && this->imag == 0 ? 0 : atan(
-        this->imag / this->real);
+        this->imag.toDouble() / this->real.toDouble());
 
     return this->real < 0 ? (
         this->imag < 0 ? result - M_PI : result + M_PI) : result;
   }
 
-  double Abs() const {
+  RationalNumber<double> Abs() const {
     // z = a + bi, i^2 = -1
     // |z| = sqrt(sqr(real) + sqr(imag)) or |z| = sqrt(sqr(a) + sqr(b))
     // need to return |z|
-    return sqrt(this->real * this->real + this->imag * this->imag);
+    return (this->real * this->real + this->imag * this->imag).Sqrt();
   }
 
-  ComplexNumber Pow(unsigned int exp = 2) {
+  ComplexNumber Pow(int exp = 2) {
     auto real = this->real;
     auto imag = this->imag;
-    for (unsigned int i = 1; i < exp; i++) {
-      this->operator*=(ComplexNumber(real, imag));
+    ComplexNumber a(real, imag);
+    for (int i = 1; i < exp; i++) {
+      a *= ComplexNumber(real, imag);
     }
-    return *this;
+    return a;
   }
 
-  double getReal() const {
+  RationalNumber<double> getReal() const {
     return this->real;
   }
 
@@ -213,7 +147,7 @@ class ComplexNumber {
     this->real = s_real;
   }
 
-  double getImag() const {
+  RationalNumber<double> getImag() const {
     return this->imag;
   }
 

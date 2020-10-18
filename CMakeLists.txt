@@ -10,4 +10,4 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     link_libraries(gcov)
 endif ()
 
-add_executable(ComplexNumbers main.cpp complex_num.h)
+add_executable(ComplexNumbers main.cpp complex_num.h rational_num.h)
