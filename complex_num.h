@@ -1,28 +1,22 @@
+#include <iostream>
 #include <algorithm>
 #include <cmath>
-#include <iostream>
-#include <cmath>
 #include <cstdint>
-#define _USE_MATH_DEFINES
 
 #include "rational_num.h"
 
 // https://en.wikipedia.org/wiki/Complex_number
+
+template<class T>
 class ComplexNumber {
-  RationalNumber<double> real;
-  RationalNumber<double> imag;
+  RationalNumber<T> real;
+  RationalNumber<T> imag;
 
  public:
-  ComplexNumber(double num = 0) {
-    this->real = RationalNumber<double>(num);
-    this->imag = 0;
-  }
+  ComplexNumber(const T &num) : real(num), imag(0) {}
 
-  explicit ComplexNumber(RationalNumber<double> real,
-                         RationalNumber<double> imag) {
-    this->real = real;
-    this->imag = imag;
-  }
+  ComplexNumber(const RationalNumber<T> &real = 0,
+                const RationalNumber<T> &imag = 0) : real(real), imag(imag) {}
 
   ComplexNumber &operator=(const ComplexNumber &other) = default;
 
@@ -109,10 +103,10 @@ class ComplexNumber {
   }
 
   friend std::ostream &operator<<(std::ostream &os, const ComplexNumber &num) {
-    return os << "(" << num.real << "," << num.imag << ")";
+    return os << "(" << num.real << ", " << num.imag << ")";
   }
 
-  RationalNumber<double> Arg() const {
+  double Arg() const {
     // tan(angle) = b / a
     // need to return angle in radians
     auto result = this->real == 0 && this->imag == 0 ? 0 : atan(
@@ -122,36 +116,35 @@ class ComplexNumber {
         this->imag < 0 ? result - M_PI : result + M_PI) : result;
   }
 
-  RationalNumber<double> Abs() const {
+  double Abs() const {
     // z = a + bi, i^2 = -1
     // |z| = sqrt(sqr(real) + sqr(imag)) or |z| = sqrt(sqr(a) + sqr(b))
     // need to return |z|
-    return (this->real * this->real + this->imag * this->imag).Sqrt();
+    return std::sqrt((this->real * this->real
+        + this->imag * this->imag).toDouble());
   }
 
-  ComplexNumber Pow(int exp = 2) {
-    auto real = this->real;
-    auto imag = this->imag;
-    ComplexNumber a(real, imag);
+  ComplexNumber Pow(const int exp = 2) const {
+    ComplexNumber a(this->real, this->imag), b = a;
     for (int i = 1; i < exp; i++) {
-      a *= ComplexNumber(real, imag);
+      a *= b;
     }
     return a;
   }
 
-  RationalNumber<double> getReal() const {
+  RationalNumber<T> getReal() const {
     return this->real;
   }
 
-  void setReal(double s_real) {
+  void setReal(RationalNumber<T> s_real) {
     this->real = s_real;
   }
 
-  RationalNumber<double> getImag() const {
+  RationalNumber<T> getImag() const {
     return this->imag;
   }
 
-  void setImag(double s_imag) {
+  void setImag(RationalNumber<T> s_imag) {
     this->imag = s_imag;
   }
 };

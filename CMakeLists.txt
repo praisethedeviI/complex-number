@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(ComplexNumbers)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # add coverage
 # https://plugins.jetbrains.com/plugin/11031-c-c--coverage
@@ -10,4 +10,4 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     link_libraries(gcov)
 endif ()
 
-add_executable(ComplexNumbers main.cpp complex_num.h rational_num.h)
+add_executable(ComplexNumbers rational_num.h complex_num.h main.cpp)
