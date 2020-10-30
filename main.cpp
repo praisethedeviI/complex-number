@@ -138,6 +138,15 @@ TEST_CASE("rational number unit test") {
       a += b;
       a += c;
       REQUIRE(a == d + b + c);
+    } SECTION("Third") {
+      RationalNumber<int64_t> a = {5, 8};
+      a += a;
+      REQUIRE(a.GetNumer() == 5);
+      REQUIRE(a.GetDenom() == 4);
+      a = {5, 8};
+      a -= a;
+      REQUIRE(a.GetNumer() == 0);
+      REQUIRE(a.GetDenom() == 1);
     }
   }SECTION("operator*= & operator/=") {
     SECTION("First") {
@@ -170,6 +179,15 @@ TEST_CASE("rational number unit test") {
       a *= b;
       a *= c;
       REQUIRE(a == d * b * c);
+    } SECTION("Third") {
+      RationalNumber<int64_t> a = {5, 8};
+      a /= a;
+      REQUIRE(a.GetNumer() == 1);
+      REQUIRE(a.GetDenom() == 1);
+      a = {5, 8};
+      a *= a;
+      REQUIRE(a.GetNumer() == 25);
+      REQUIRE(a.GetDenom() == 64);
     }
   }SECTION("Complex expressions") {
     RationalNumber<int64_t> a, b = {3, 5}, c = {4}, d = {43, 5}, e = {7},
@@ -206,7 +224,7 @@ TEST_CASE("rational number unit test") {
     cout << endl << "SECTION ostream RationalNumber" << endl;
     RationalNumber<int64_t> a;
     cout << a << endl;
-    a = {100, 20};
+    a = {100, 40};
     cout << a << endl;
     a = {23};
     cout << a << endl;
@@ -348,6 +366,19 @@ TEST_CASE("Complex number unit test") {
       REQUIRE(a.getReal().toDouble() == Approx(z.real()));
       REQUIRE(a.getImag().toDouble() == Approx(z.imag()));
 
+    } SECTION("Third") {
+      ComplexNumber<int64_t> a = {{3, 4}, {4, 5}};
+      complex<double> b(RationalNumber<int64_t>(3, 4).toDouble(), RationalNumber<int64_t>(4, 5).toDouble());
+      a += a;
+      b += b;
+      REQUIRE(a.getReal().toDouble() == Approx(b.real()));
+      REQUIRE(a.getImag().toDouble() == Approx(b.imag()));
+      a = {{3, 4}, {4, 5}};
+      b = complex<double>(RationalNumber<int64_t>(3, 4).toDouble(), RationalNumber<int64_t>(4, 5).toDouble());
+      a -= a;
+      b -= b;
+      REQUIRE(a.getReal().toDouble() == Approx(b.real()));
+      REQUIRE(a.getImag().toDouble() == Approx(b.imag()));
     }
   }SECTION("operator*= & operator/=") {
     SECTION("First") {
@@ -390,6 +421,19 @@ TEST_CASE("Complex number unit test") {
       REQUIRE(a.getReal().toDouble() == Approx(z.real()));
       REQUIRE(a.getImag().toDouble() == Approx(z.imag()));
 
+    } SECTION("Third") {
+      ComplexNumber<int64_t> a = {{3, 4}, {4, 5}};
+      complex<double> b(RationalNumber<int64_t>(3, 4).toDouble(), RationalNumber<int64_t>(4, 5).toDouble());
+      a /= a;
+      b /= b;
+      REQUIRE(a.getReal().toDouble() == Approx(b.real()));
+      REQUIRE(a.getImag().toDouble() == Approx(b.imag()));
+      a = {{3, 4}, {4, 5}};
+      b = complex<double>(RationalNumber<int64_t>(3, 4).toDouble(), RationalNumber<int64_t>(4, 5).toDouble());
+      a /= a;
+      b /= b;
+      REQUIRE(a.getReal().toDouble() == Approx(b.real()));
+      REQUIRE(a.getImag().toDouble() == Approx(b.imag()));
     }
   }SECTION("Complex expressions") {
     ComplexNumber<int64_t> a(23, 3), b({5, 2}, {-4, 3}), c(5, {-4, -5}),

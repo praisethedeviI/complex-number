@@ -106,7 +106,7 @@ class ComplexNumber {
     return os << "(" << num.real << ", " << num.imag << ")";
   }
 
-  double Arg() const {
+  [[nodiscard]] double Arg() const {
     // tan(angle) = b / a
     // need to return angle in radians
     auto result = this->real == 0 && this->imag == 0 ? 0 : atan(
@@ -116,7 +116,7 @@ class ComplexNumber {
         this->imag < 0 ? result - M_PI : result + M_PI) : result;
   }
 
-  double Abs() const {
+  [[nodiscard]] double Abs() const {
     // z = a + bi, i^2 = -1
     // |z| = sqrt(sqr(real) + sqr(imag)) or |z| = sqrt(sqr(a) + sqr(b))
     // need to return |z|
@@ -124,7 +124,7 @@ class ComplexNumber {
         + this->imag * this->imag).toDouble());
   }
 
-  ComplexNumber Pow(const int exp = 2) const {
+  [[nodiscard]] ComplexNumber Pow(const int exp = 2) const {
     ComplexNumber a(this->real, this->imag), b = a;
     for (int i = 1; i < exp; i++) {
       a *= b;
@@ -132,7 +132,7 @@ class ComplexNumber {
     return a;
   }
 
-  RationalNumber<T> getReal() const {
+  [[nodiscard]] RationalNumber<T> getReal() const {
     return this->real;
   }
 
@@ -140,7 +140,7 @@ class ComplexNumber {
     this->real = s_real;
   }
 
-  RationalNumber<T> getImag() const {
+  [[nodiscard]] RationalNumber<T> getImag() const {
     return this->imag;
   }
 

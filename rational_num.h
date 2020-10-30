@@ -11,6 +11,10 @@ class RationalNumber {
   T denom;
 
   void Reduce() {
+    if (this->numer == 0) {
+      this->denom = 1;
+      return;
+    }
     auto got_gcd =
         std::gcd(this->numer < 0 ? -this->numer : this->numer, this->denom);
     this->numer /= got_gcd;
@@ -32,9 +36,9 @@ class RationalNumber {
   RationalNumber<T> &operator=(const RationalNumber<T> &other) = default;
 
   RationalNumber<T> operator+(const RationalNumber<T> &other) const {
-    return RationalNumber<T>(
-        this->numer * other.denom + other.numer * this->denom,
-        this->denom * other.denom);
+    auto a = numer * other.denom + other.numer * denom;
+    auto b = denom * other.denom;
+    return RationalNumber<T>(a, b);
   }
 
   RationalNumber<T> operator-(const RationalNumber<T> &other) const {
@@ -42,13 +46,11 @@ class RationalNumber {
   }
 
   RationalNumber<T> operator*(const RationalNumber<T> &other) const {
-    return RationalNumber<T>(this->numer * other.numer,
-                             this->denom * other.denom);
+    return RationalNumber<T>(numer * other.numer, denom * other.denom);
   }
 
   RationalNumber<T> operator/(const RationalNumber<T> &other) const {
-    return RationalNumber<T>(this->numer * other.denom,
-                             this->denom * other.numer);
+    return RationalNumber<T>(numer * other.denom, denom * other.numer);
   }
 
   RationalNumber<T> &operator+=(const RationalNumber<T> &other) {
@@ -73,8 +75,9 @@ class RationalNumber {
   }
 
   RationalNumber<T> &operator/=(const RationalNumber<T> &other) {
+    auto other_numer = other.numer;
     this->numer = this->numer * other.denom;
-    this->denom = this->denom * other.numer;
+    this->denom = this->denom * other_numer;
     Reduce();
     return *this;
   }
@@ -107,20 +110,23 @@ class RationalNumber {
     return *this < other || *this == other;
   }
 
-  double toDouble() const {
+  [[nodiscard]] double toDouble() const {
     return (double) numer / denom;
   }
 
   friend std::ostream &operator<<(std::ostream &os,
                                   const RationalNumber<T> &num) {
+    if (num.GetNumer() == 0 || num.GetDenom() == 1) {
+      return os << num.GetNumer();
+    }
     return os << num.GetNumer() << "/" << num.GetDenom();
   }
 
-  T GetNumer() const {
+  [[nodiscard]] T GetNumer() const {
     return numer;
   }
 
-  T GetDenom() const {
+  [[nodiscard]] T GetDenom() const {
     return denom;
   }
 };
