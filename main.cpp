@@ -479,6 +479,9 @@ TEST_CASE("Complex number unit test") {
       z = complex<double>(RationalNumber<int64_t>(22, -33).toDouble(),
                           RationalNumber<int64_t>(-12).toDouble());
       REQUIRE(a.Arg() == Approx(arg(z)));
+      a = {0, 0};
+      z = complex<double>(0, 0);
+      REQUIRE(a.Arg() == Approx(arg(z)));
 
     }SECTION("abs") {
       ComplexNumber<int64_t> a({7, 32}, {65, 21});
@@ -491,6 +494,9 @@ TEST_CASE("Complex number unit test") {
       a = {{-22, 434}, 5};
       z = complex<double>(RationalNumber<int64_t>(-22, 434).toDouble(),
                           RationalNumber<int64_t>(5).toDouble());
+      REQUIRE(a.Abs() == Approx(abs(z)));
+      a = {0, 0};
+      z = complex<double>(0, 0);
       REQUIRE(a.Abs() == Approx(abs(z)));
 
     }SECTION("pow") {
@@ -514,6 +520,13 @@ TEST_CASE("Complex number unit test") {
       x = pow(z, 5);
       REQUIRE(b.getReal().toDouble() == Approx(x.real()));
       REQUIRE(b.getImag().toDouble() == Approx(x.imag()));
+      a = {0, 0};
+      z = complex<double>(0, 0);
+      b = a.Pow(2);
+      x = pow(z, 2);
+      REQUIRE(b.getReal().toDouble() == Approx(x.real()));
+      REQUIRE(b.getImag().toDouble() == Approx(x.imag()));
+
 
     }SECTION("ostream") {
       cout << endl << "SECTION ostream ComplexNumber" << endl;
